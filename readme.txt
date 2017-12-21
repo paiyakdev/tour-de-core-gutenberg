@@ -1,69 +1,30 @@
 === Tour de Coure - Gutenberg Edition ===
 Contributors: (this should be a list of wordpress.org userid's)
-Donate link: http://example.com/
 Tags: comments, spam
-Requires at least: 4.4
+Requires at least: 4.9
 Tested up to: 4.9.1
 Stable tag: 0.1.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+A test plugin for experimenting with custom Gutenberg blocks.
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+If you want to see the streams behind this plugin, go to one of those two places:
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+https://www.twitch.tv/collections/JftQ1YlKAhXTEQ
+https://www.youtube.com/watch?v=E8tzSFPLOgU&list=PLXfBe-Bwd1wM7_eeCGZvizGNthkhMoEiV
 
-A few notes about the sections above:
+In order to get your environment up and running, make sure to run 
 
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
+`npm install`
 
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
+in the plugin's folder. After that just run 
 
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+`npm run watch-react`
 
-== Installation ==
-
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
-
-== Frequently Asked Questions ==
-
-= A question that someone might have =
-
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
-
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+to watch the folder assets/jsx/ for changes. As you edit the files in there(or add new files), babel will compile them to browser-ready JS files.
 
 == Changelog ==
 
@@ -71,8 +32,8 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 * A change since the previous version.
 * Another change.
 
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+= 0.1.0 =
+* Initial version with all of our npm stuff in place and the first custom Gutenberg block in place.
 
 == Upgrade Notice ==
 
