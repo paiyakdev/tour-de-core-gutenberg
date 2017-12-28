@@ -1,17 +1,13 @@
 (function(){
 	"use strict";
 
-	const { Component } = wp.element;
 	const { __ } = wp.i18n;
 	const { ColorPalette, registerBlockType, BlockControls, Toolbar, MediaUploadButton, Dashicon, BlockDescription, InspectorControls } = wp.blocks;
 	const { TextControl } = InspectorControls;
 
-	class HelloWorld extends Component {
+	class HelloWorld extends TdC_Component {
 		constructor() {
 			super( ...arguments );
-
-			this.updateContent = this.updateContent.bind( this );
-			this.updateColor = this.updateColor.bind( this );
 		}
 
 		updateContent( content ) {
@@ -33,7 +29,6 @@
 			if ( color ) {
 				blockStyle.backgroundColor = color;
 			}
-			console.log( blockStyle );
 
 			const blockDescription = (
 				<BlockDescription>

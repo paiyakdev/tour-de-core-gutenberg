@@ -28,9 +28,11 @@ to watch the folder assets/jsx/ for changes. As you edit the files in there(or a
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
+= 0.1.1 =
+* Created a TdC Base Component(to handle auto-binding of methods)
+* Created a Recent Posts Component that pulls from the REST API
+* Added the PHP rendering of the Recent Posts Component
+* Stopped using the transform-runtime babel plugin
 
 = 0.1.0 =
 * Initial version with all of our npm stuff in place and the first custom Gutenberg block in place.
