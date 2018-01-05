@@ -18,6 +18,12 @@
 				this[ properties[i] ] = this[ properties[i] ].bind( this );
 			}
 		}
+
+		_onTextAttributeChange( key, text ) {
+			var attributes = {};
+			attributes[key] = text;
+			this.props.setAttributes( attributes );
+		}
 	}
 
 	window.TdC_Component = TdC_Component;
