@@ -28,6 +28,11 @@ to watch the folder assets/jsx/ for changes. As you edit the files in there(or a
 
 == Changelog ==
 
+= 0.1.3 =
+* Skipped to version 0.1.3 to match the version number with the video series order
+* Created a TdC Team Members block that pulls a list of posts from a custom post type, along with some custom fields
+* Created a TdC Team Member Info block that serves as a (ACF) meta box replacement
+
 = 0.1.1 =
 * Created a TdC Base Component(to handle auto-binding of methods)
 * Created a Recent Posts Component that pulls from the REST API
