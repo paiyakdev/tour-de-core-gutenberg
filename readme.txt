@@ -28,6 +28,11 @@ to watch the folder assets/jsx/ for changes. As you edit the files in there(or a
 
 == Changelog ==
 
+= 0.1.4 =
+* Moved over the Team Members CPT into the plugin so that it just works without any extra code
+* Created a locked-down template for the Team Members CPT so that we can utilize Gutenberg as a full meta box replacement
+* Created a very basic and far from ideal way in which to reuse our block rendering code between the front-end and the back-end. A much better way would be to invest a bit of time to find and setup a PHP template engine that has a compatible JS alternative so that you can 100% reuse the code between PHP and JS. Nonetheless though, our implementation is a good proof of concept that it is possible to reuse your code.
+
 = 0.1.3 =
 * Skipped to version 0.1.3 to match the version number with the video series order
 * Created a TdC Team Members block that pulls a list of posts from a custom post type, along with some custom fields

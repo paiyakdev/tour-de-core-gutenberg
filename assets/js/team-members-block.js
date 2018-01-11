@@ -11,6 +11,7 @@
 			super(...arguments);
 
 			this.onTitleChange = this._onTextAttributeChange.bind(this, 'title');
+			this.template = wp.template('team-member');
 		}
 
 		render() {
@@ -31,49 +32,25 @@
 				content = wp.element.createElement(
 					'div',
 					{ className: 'team-members-outer-wrap' },
-					title ? wp.element.createElement(
-						'h3',
-						null,
-						title
-					) : null,
 					wp.element.createElement(
 						'div',
-						{ className: 'team-members-wrap' },
-						team_members.data.map(function (member, i) {
-							var image = null,
-							    image_src;
-
-							if (member.information.image) {
-								if (member.information.image.sizes.large) {
-									image_src = member.information.image.sizes.large;
-								} else {
-									image_src = member.information.image.url;
-								}
-
-								image = wp.element.createElement('img', { className: 'team-member-image', src: image_src });
-							}
-
-							return wp.element.createElement(
+						{ className: 'sectionWrapper bg1' },
+						wp.element.createElement(
+							'div',
+							{ className: 'container team-boxes' },
+							title ? wp.element.createElement(
 								'div',
-								{ className: 'team-member', key: 'team-member-' + member.id + '-' + i },
-								image,
+								{ className: 'cell-12' },
 								wp.element.createElement(
-									'h4',
-									null,
-									member.information.name
-								),
-								member.information.position ? wp.element.createElement(
-									'h5',
-									{ className: 'member-position' },
-									member.information.position
-								) : null,
-								member.information.short_bio ? wp.element.createElement(
-									'p',
-									{ className: 'member-short-bio' },
-									member.information.short_bio
-								) : null
-							);
-						})
+									'h3',
+									{ className: 'block-head-secondary' },
+									title
+								)
+							) : null,
+							team_members.data.map(function (member, i) {
+								return wp.element.createElement('div', { key: 'team-member-' + member.id + '-' + i, dangerouslySetInnerHTML: { __html: this.template(member.information) } });
+							}.bind(this))
+						)
 					)
 				);
 			}
@@ -105,7 +82,7 @@
 
 	TdCTeamMembers = withAPIData(function (props, { type }) {
 		return {
-			team_members: '/wp/v2/' + type('pdev_team') + '?per_page=10&orderby=date&order=asc'
+			team_members: '/wp/v2/' + type('team') + '?per_page=10&orderby=date&order=asc'
 		};
 	})(TdCTeamMembers);
 

@@ -11,6 +11,7 @@
 			super( ...arguments );
 
 			this.onTitleChange = this._onTextAttributeChange.bind( this, 'title' );
+			this.template = wp.template( 'team-member' );
 		}
 
 		render() {
@@ -26,31 +27,20 @@
 			} else {
 				content = (
 					<div className="team-members-outer-wrap">
-						{title ? <h3>{title}</h3> : null}
-						<div className="team-members-wrap">
-							{team_members.data.map(function(member, i) {
-								var image = null,
-									image_src;
-
-								if ( member.information.image ) {
-									if ( member.information.image.sizes.large ) {
-										image_src = member.information.image.sizes.large;
-									} else {
-										image_src = member.information.image.url;
-									}
-
-									image = <img className="team-member-image" src={image_src} />;
+						<div className="sectionWrapper bg1">
+							<div className="container team-boxes">
+								{ title ?
+									<div className="cell-12">
+										<h3 className="block-head-secondary">{title}</h3>
+									</div> : null
 								}
 
-								return (
-									<div className="team-member" key={'team-member-' + member.id + '-' + i}>
-										{image}
-										<h4>{member.information.name}</h4>
-										{ member.information.position ? <h5 className="member-position">{member.information.position}</h5> : null }
-										{ member.information.short_bio ? <p className="member-short-bio">{member.information.short_bio}</p> : null }
-									</div>
-								);
-							})}
+								{team_members.data.map(function(member, i) {
+									return (
+										<div key={'team-member-' + member.id + '-' + i} dangerouslySetInnerHTML={{__html: this.template(member.information)}} />
+									);
+								}.bind(this))}
+							</div>
 						</div>
 					</div>
 				);
@@ -75,7 +65,7 @@
 
 	TdCTeamMembers = withAPIData( function( props, { type } ) {
 		return {
-			team_members: '/wp/v2/' + type( 'pdev_team' ) + '?per_page=10&orderby=date&order=asc'
+			team_members: '/wp/v2/' + type( 'team' ) + '?per_page=10&orderby=date&order=asc'
 		};
 	} )( TdCTeamMembers );
 

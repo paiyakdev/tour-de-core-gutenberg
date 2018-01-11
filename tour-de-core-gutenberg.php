@@ -7,7 +7,7 @@
  * Author URI:      https://paiyakdev.com
  * Text Domain:     tour-de-core-gutenberg
  * Domain Path:     /languages
- * Version:         0.1.3
+ * Version:         0.1.4
  *
  * @package         Tour_De_Core_Gutenberg
  */
@@ -37,11 +37,12 @@ class TdC_Gutenberg {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_frontend_assets' ), 10 );
 		add_action( 'init', array( __CLASS__, 'register_blocks' ), 10 );
 		add_action( 'rest_api_init', array( __CLASS__, 'register_rest_api_fields' ), 10 );
+		add_action( 'init', array( __CLASS__, 'register_team_post_type' ) );
 	}
 	
 	public static function register_rest_api_fields() {
 		register_rest_field(
-			'pdev_team',
+			'team',
 			'information',
 			array(
 				'get_callback'	=> array( __CLASS__, 'get_team_member_meta_for_api' ),
@@ -50,7 +51,7 @@ class TdC_Gutenberg {
 		);
 
 		register_rest_field(
-			'pdev_team',
+			'team',
 			'team_member_name',
 			array(
 				'get_callback'		=> array( __CLASS__, 'get_meta_for_rest_api' ),
@@ -85,7 +86,7 @@ class TdC_Gutenberg {
 	}
 
 	public static function get_meta_for_rest_api( $object, $key ) {
-		if ( 'pdev_team' != $object['type'] ) {
+		if ( 'team' != $object['type'] ) {
 			return null;
 		}
 
@@ -93,7 +94,7 @@ class TdC_Gutenberg {
 	}
 
 	public static function update_meta_for_rest_api( $value, $object, $key ) {
-		if ( 'pdev_team' != $object['type'] ) {
+		if ( 'team' != $object['type'] ) {
 			return null;
 		}
 
@@ -104,11 +105,18 @@ class TdC_Gutenberg {
 		$id = $object['id'];
 		$data = array(
 			'name'				=> get_field( 'team_member_name', $id ),
-			'image'				=> get_field( 'member_image', $id ),
+			'image'				=> get_field( 'member_image', $id, false ),
 			'position'			=> get_field( 'position', $id ),
 			'short_bio'			=> get_field( 'short_bio', $id ),
 			'contact_details'	=> get_field( 'contact_details', $id ),
 		);
+
+		if ( ! empty( $data['image'] ) ) {
+			$data['image'] = wp_get_attachment_image_src( $data['image'], 'large' );
+			$data['image'] = $data['image'][0];
+		} else {
+			$data['image'] = '';
+		}
 
 		return $data;
 	}
@@ -117,11 +125,11 @@ class TdC_Gutenberg {
 		if ( apply_filters( 'tdc/blocks/default_styling', true ) ) {
 			wp_register_style( 'tdc-gutenberg-blocks', plugins_url( 'assets/css/blocks.css', __FILE__ ) );
 		}
-		wp_register_script( 'tdc-base', plugins_url( 'assets/js/tdc-base.js', __FILE__ ), array( 'wp-blocks', 'wp-element' ), 'v0.1.3' );
-		wp_register_script( 'tdc-gutenberg-hello-world-block', plugins_url( 'assets/js/hello-world-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.3' );
-		wp_register_script( 'tdc-gutenberg-recent-posts-block', plugins_url( 'assets/js/recent-posts-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.3' );
-		wp_register_script( 'tdc-gutenberg-team-members-block', plugins_url( 'assets/js/team-members-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.3' );
-		wp_register_script( 'tdc-gutenberg-team-member-information-block', plugins_url( 'assets/js/team-member-information-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.3' );
+		wp_register_script( 'tdc-base', plugins_url( 'assets/js/tdc-base.js', __FILE__ ), array( 'wp-blocks', 'wp-element' ), 'v0.1.4' );
+		wp_register_script( 'tdc-gutenberg-hello-world-block', plugins_url( 'assets/js/hello-world-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.4' );
+		wp_register_script( 'tdc-gutenberg-recent-posts-block', plugins_url( 'assets/js/recent-posts-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.4' );
+		wp_register_script( 'tdc-gutenberg-team-members-block', plugins_url( 'assets/js/team-members-block.js', __FILE__ ), array( 'tdc-base', 'wp-util' ), 'v0.1.4' );
+		wp_register_script( 'tdc-gutenberg-team-member-information-block', plugins_url( 'assets/js/team-member-information-block.js', __FILE__ ), array( 'tdc-base' ), 'v0.1.4' );
 	}
 
 	public static function enqueue_gutenberg_scripts() {
@@ -131,9 +139,11 @@ class TdC_Gutenberg {
 		wp_enqueue_script( 'tdc-gutenberg-hello-world-block' );
 		wp_enqueue_script( 'tdc-gutenberg-recent-posts-block' );
 		wp_enqueue_script( 'tdc-gutenberg-team-members-block' );
-		if ( 'pdev_team' == get_post_type() ) {
+		if ( 'team' == get_post_type() ) {
 			wp_enqueue_script( 'tdc-gutenberg-team-member-information-block' );
 		}
+
+		add_action( 'admin_footer', array( __CLASS__, 'render_team_members_gutenberg_template' ) );
 	}
 
 	public static function enqueue_frontend_assets() {
@@ -180,7 +190,7 @@ class TdC_Gutenberg {
 
 		$team_member = get_posts( array(
 			'post_per_page'	=> -1,
-			'post_type'		=> 'pdev_team',
+			'post_type'		=> 'team',
 			'orderby' => 'date',
 			'order' => 'ASC',
 		) ); ?>
@@ -192,93 +202,85 @@ class TdC_Gutenberg {
 						<h3 class="block-head-secondary"><?php echo $attributes['title'] ?></h3>
 					</div>
 				<?php }
-				foreach ( $team_member as $team ) :
-					$member_position = get_field( 'position', $team->ID );
-					$member_short_bio = get_field( 'short_bio', $team->ID );
-					$member_name = get_field( 'team_member_name', $team->ID );
-					$member_image = get_field( 'member_image', $team->ID );
-					$member_contact = get_field( 'contact_details', $team->ID ); ?>
-		
-					<div class="cell-3">
-						<div class="team-box">
-							<div class="team-img">
-								<?php if ( $member_image ) : ?>
-									<img alt="<?php echo ( $member_name ); ?>" src="<?php echo esc_attr( $member_image['url'] ); ?>">
-								<?php else : ?>
-									<img alt="<?php echo ( $member_name ); ?>" src="<?php bloginfo( 'template_directory' ); ?>/images/faceless-team-member.jpg">
-								<?php endif; ?>
-								<h3><?php echo $member_name; ?></h3>
-							</div>
-							<div class="team-details">
-								<h3 class="gry-bg"><?php echo $member_name; ?></h3>
-								<?php if ( $member_position ) : ?>
-									<div class="t-position"><?php echo $member_position; ?></div>
-								<?php endif; ?>
-								<?php echo wpautop( $member_short_bio ); ?>
-		
-								<div class="team-socials">
-									<ul>
-										<?php foreach ($member_contact as $contact) :
-											switch ($contact['type']) {
-												case 'email': ?>
-													<li>
-														<a href="mailto:<?php echo $contact['url_input']; ?>">
-															<i class="fa fa-envelope"></i>
-														</a>
-													</li><?php
-													break;
-												
-												case 'twitter': ?>
-													<li>
-														<a href="<?php echo $contact['url_input']; ?>">
-															<i class="fa fa-twitter"></i>
-														</a>
-													</li> <?php
-													break;
-		
-												case 'linkedin': ?>
-													<li>
-														<a href="<?php echo $contact['url_input']; ?>">
-															<i class="fa fa-linkedin"></i>
-														</a>
-													</li><?php
-													break;
-		
-												case 'skype': ?>
-													<li>
-														<a href="skype:<?php echo $contact['url_input']; ?>?chat">
-															<i class="fa fa-skype"></i>
-														</a>
-													</li><?php
-													break;
-		
-												case 'google_plus': ?>
-													<li>
-														<a href="<?php echo $contact['url_input']; ?>">
-															<i class="fa fa-google-plus"></i>
-														</a>
-													</li><?php
-													break;
-		
-												case 'facebook': ?>
-													<li>
-														<a href="<?php echo $contact['url_input']; ?>">
-															<i class="fa fa-facebook"></i>
-														</a>
-													</li><?php
-													break;
-											}?>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				<?php endforeach; ?>
+				foreach ( $team_member as $team ) {
+					$data = array(
+						'position'	=> get_field( 'position', $team->ID ),
+						'short_bio'	=> get_field( 'short_bio', $team->ID ),
+						'name'		=> get_field( 'team_member_name', $team->ID ),
+						'image'		=> get_field( 'member_image', $team->ID ),
+						'contact'	=> get_field( 'contact_details', $team->ID ),
+					);
+					if ( ! empty( $data['image'] ) ) {
+						$data['image'] = wp_get_attachment_image_src( $data['image'], 'large' );
+						$data['image'] = $data['image'][0];
+					}
+
+					self::render_tempalte( 'team-member', $data );
+				} ?>
 			</div>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	public static function register_team_post_type() {
+		$labels = array(
+			'name'               => _x( 'Team Members', 'post type general name', 'tour-de-core-gutenberg' ),
+			'singular_name'      => _x( 'Team Member', 'post type singular name', 'tour-de-core-gutenberg' ),
+			'menu_name'          => _x( 'Team', 'admin menu', 'tour-de-core-gutenberg' ),
+			'name_admin_bar'     => _x( 'Team Member', 'add new on admin bar', 'tour-de-core-gutenberg' ),
+			'add_new'            => _x( 'Add New', 'team member', 'tour-de-core-gutenberg' ),
+			'add_new_item'       => __( 'Add New Team Member', 'tour-de-core-gutenberg' ),
+			'new_item'           => __( 'New Team Member', 'tour-de-core-gutenberg' ),
+			'edit_item'          => __( 'Edit Team Member', 'tour-de-core-gutenberg' ),
+			'view_item'          => __( 'View Team Member', 'tour-de-core-gutenberg' ),
+			'all_items'          => __( 'All Team Members', 'tour-de-core-gutenberg' ),
+			'search_items'       => __( 'Search Team Members', 'tour-de-core-gutenberg' ),
+			'parent_item_colon'  => __( 'Parent Team Members:', 'tour-de-core-gutenberg' ),
+			'not_found'          => __( 'No team members found.', 'tour-de-core-gutenberg' ),
+			'not_found_in_trash' => __( 'No team members found in Trash.', 'tour-de-core-gutenberg' ),
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'public'             => false,
+			'publicly_queryable' => false,
+			'show_ui'            => true,
+			'show_in_rest'       => true,
+			'show_in_menu'       => true,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'team' ),
+			'capability_type'    => 'post',
+			'has_archive'        => 'team',
+			'hierarchical'       => false,
+			'menu_position'      => 20,
+			'menu_icon'          => 'dashicons-groups',
+			'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+			'template_lock'      => 'all',
+			'template' => array(
+				array( 'tdc/team-member-information', array(
+				) ),
+			),
+		);
+
+		register_post_type( 'team', $args );
+	}
+
+	public static function render_tempalte( $template_name, $tmpl_data = null ) {
+		$template = locate_template( 'tdc/' . $template_name );
+		if ( ! $template ) {
+			$template = dirname( __FILE__ ) . '/includes/templates/' . $template_name . '.php';
+		}
+
+		if ( ! $template || ! file_exists( $template ) ) {
+			return;
+		}
+
+		include $template;
+	}
+
+	public static function render_team_members_gutenberg_template() {
+		self::render_tempalte( 'team-member' );
 	}
 }
 

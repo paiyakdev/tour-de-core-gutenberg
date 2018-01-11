@@ -11,6 +11,7 @@
 			super( ...arguments );
 
 			this.onNameChange = this._onTextAttributeChange.bind( this, 'team_member_name' );
+			this.onPositionChange = this._onTextAttributeChange.bind( this, 'position' );
 		}
 
 		onImageChange( image ) {

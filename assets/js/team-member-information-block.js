@@ -11,6 +11,7 @@
 			super(...arguments);
 
 			this.onNameChange = this._onTextAttributeChange.bind(this, 'team_member_name');
+			this.onPositionChange = this._onTextAttributeChange.bind(this, 'position');
 		}
 
 		onImageChange(image) {
@@ -24,11 +25,11 @@
 			const { team_member_name, position } = attributes;
 
 			var content = wp.element.createElement(
-				"div",
-				{ className: "team-members-outer-wrap" },
+				'div',
+				{ className: 'team-members-outer-wrap' },
 				wp.element.createElement(
-					"div",
-					{ className: "team-members-wrap" },
+					'div',
+					{ className: 'team-members-wrap' },
 					wp.element.createElement(TextControl, {
 						label: __('Team Member Name'),
 						value: team_member_name,
@@ -44,7 +45,7 @@
 						{
 							title: __('Team Member Imge'),
 							onSelect: this.onImageChange,
-							type: "image"
+							type: 'image'
 						},
 						image && !!image.data && wp.element.createElement(
 							ResponsiveWrapper,
@@ -52,7 +53,7 @@
 								naturalWidth: image.data.media_details.width,
 								naturalHeight: image.data.media_details.height
 							},
-							wp.element.createElement("img", { src: image.data.source_url, alt: __('Member Image') })
+							wp.element.createElement('img', { src: image.data.source_url, alt: __('Member Image') })
 						),
 						image && image.isLoading && wp.element.createElement(Spinner, null)
 					)
@@ -61,19 +62,19 @@
 
 			return [focus && wp.element.createElement(
 				InspectorControls,
-				{ key: "inspector" },
+				{ key: 'inspector' },
 				wp.element.createElement(
 					BlockDescription,
 					null,
 					wp.element.createElement(
-						"p",
+						'p',
 						null,
 						__('Fills out information about this team member.')
 					)
 				)
 			), wp.element.createElement(
-				"div",
-				{ key: "content" },
+				'div',
+				{ key: 'content' },
 				content
 			)];
 		}
